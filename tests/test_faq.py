@@ -1,3 +1,4 @@
+# tests/test_faq.py
 import pytest
 import allure
 from page_objects.main_page import MainPage

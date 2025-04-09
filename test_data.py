@@ -1,3 +1,4 @@
+# test_data.py
 from faker import Faker
 import datetime
 
@@ -17,7 +18,7 @@ def generate_order_data():
         "comment": fake.sentence(nb_words=5)
     }
 
-# Создаём два набора случайных данных для заказа
+# Создаем два набора случайных данных для заказа
 order_data = [generate_order_data() for _ in range(2)]
 
 # Константные данные для FAQ-тестов (проверьте актуальные ответы с сайта)

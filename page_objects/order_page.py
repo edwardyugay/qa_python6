@@ -1,49 +1,52 @@
+# page_objects/order_page.py
 from selenium.webdriver.common.by import By
-from helper import wait_for_element_clickable
+from base_page import BasePage
+from urls import BASE_URL
 
-
-class OrderPage:
-    def __init__(self, driver):
-        self.driver = driver
+class OrderPage(BasePage):
+    # Локаторы, вынесенные как атрибуты класса
+    ORDER_BUTTON_TOP = (By.ID, "orderButton")
+    ORDER_BUTTON_BOTTOM = (By.ID, "orderButtonBottom")
+    FIRST_NAME_INPUT = (By.ID, "firstName")
+    LAST_NAME_INPUT = (By.ID, "lastName")
+    ADDRESS_INPUT = (By.ID, "address")
+    METRO_INPUT = (By.ID, "metro")
+    PHONE_INPUT = (By.ID, "phone")
+    NEXT_BUTTON = (By.ID, "nextButton")
+    ORDER_DATE_INPUT = (By.ID, "orderDate")
+    RENTAL_PERIOD_DROPDOWN = (By.ID, "rentalPeriod")
+    RENTAL_PERIOD_OPTION_SUTKI = (By.XPATH, "//div[@id='rentalPeriod']//option[@value='сутки']")
+    COMMENT_INPUT = (By.ID, "comment")
+    ORDER_SUBMIT_BUTTON = (By.ID, "orderSubmit")
+    ORDER_CONFIRMATION_MODAL = (By.ID, "orderConfirmation")
 
     def open(self):
-        # Начинаем с главной страницы
-        self.driver.get("https://qa-scooter.praktikum-services.ru/")
+        self.driver.get(BASE_URL)
 
     def click_order_button(self, position="top"):
-        """
-        position: "top" или "bottom"
-        """
         if position == "top":
-            locator = (By.ID, "orderButton")
+            locator = self.ORDER_BUTTON_TOP
         else:
-            locator = (By.ID, "orderButtonBottom")
-        wait_for_element_clickable(self.driver, locator).click()
+            locator = self.ORDER_BUTTON_BOTTOM
+        self.wait_for_element_clickable(locator).click()
 
     def fill_order_form(self, order_info):
         # Заполнение личных данных
-        wait_for_element_clickable(self.driver, (By.ID, "firstName")).send_keys(order_info["first_name"])
-        wait_for_element_clickable(self.driver, (By.ID, "lastName")).send_keys(order_info["last_name"])
-        wait_for_element_clickable(self.driver, (By.ID, "address")).send_keys(order_info["address"])
-        wait_for_element_clickable(self.driver, (By.ID, "metro")).send_keys(order_info["metro"])
-        wait_for_element_clickable(self.driver, (By.ID, "phone")).send_keys(order_info["phone"])
-
-        # Переход к следующему этапу заполнения
-        wait_for_element_clickable(self.driver, (By.ID, "nextButton")).click()
-
+        self.wait_for_element_clickable(self.FIRST_NAME_INPUT).send_keys(order_info["first_name"])
+        self.wait_for_element_clickable(self.LAST_NAME_INPUT).send_keys(order_info["last_name"])
+        self.wait_for_element_clickable(self.ADDRESS_INPUT).send_keys(order_info["address"])
+        self.wait_for_element_clickable(self.METRO_INPUT).send_keys(order_info["metro"])
+        self.wait_for_element_clickable(self.PHONE_INPUT).send_keys(order_info["phone"])
+        # Переход к данным доставки
+        self.wait_for_element_clickable(self.NEXT_BUTTON).click()
         # Заполнение данных доставки
-        wait_for_element_clickable(self.driver, (By.ID, "orderDate")).send_keys(order_info["order_date"])
-        wait_for_element_clickable(self.driver, (By.ID, "rentalPeriod")).click()
-        # Для простоты выбираем вариант "сутки" из выпадающего списка
-        wait_for_element_clickable(self.driver, (By.XPATH, "//div[@id='rentalPeriod']//option[@value='сутки']")).click()
-        wait_for_element_clickable(self.driver, (By.ID, "comment")).send_keys(order_info["comment"])
+        self.wait_for_element_clickable(self.ORDER_DATE_INPUT).send_keys(order_info["order_date"])
+        self.wait_for_element_clickable(self.RENTAL_PERIOD_DROPDOWN).click()
+        self.wait_for_element_clickable(self.RENTAL_PERIOD_OPTION_SUTKI).click()
+        self.wait_for_element_clickable(self.COMMENT_INPUT).send_keys(order_info["comment"])
 
     def submit_order(self):
-        # Финальное подтверждение заказа
-        wait_for_element_clickable(self.driver, (By.ID, "orderSubmit")).click()
+        self.wait_for_element_clickable(self.ORDER_SUBMIT_BUTTON).click()
 
     def get_order_confirmation(self):
-        # Модальное окно подтверждения заказа имеет id "orderConfirmation"
-        confirmation_locator = (By.ID, "orderConfirmation")
-        element = wait_for_element_clickable(self.driver, confirmation_locator)
-        return element.text
+        return self.wait_for_element_clickable(self.ORDER_CONFIRMATION_MODAL).text
